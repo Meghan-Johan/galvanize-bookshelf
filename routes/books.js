@@ -40,5 +40,18 @@ router.post('/books', (req, res, next) => {
     });
 });
 
+router.patch('/books/:id', (req, res, next) => {
+  let id = req.params.id * 1;
+  knex('books')
+    .where('id', id)
+    .update(req.body, '*')
+    .then((book) => {
+      res.send(book);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
 
 module.exports = router;
