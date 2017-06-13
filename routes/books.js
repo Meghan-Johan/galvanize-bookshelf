@@ -31,10 +31,9 @@ router.get('/books/:id', (req, res, next) => {
 
 router.post('/books', (req, res, next) => {
   knex('books')
-    // .insert({ name: req.body.name })
-    .insert(req.body)
-    .then((books) => {
-      res.send(books);
+    .insert(req.body, '*')
+    .then((book) => {
+      res.send(book);
     })
     .catch((err) => {
       next(err);
