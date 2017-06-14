@@ -23,7 +23,7 @@ router.get('/books/:id', (req, res, next) => {
   knex('books')
     .where('id', id)
     .then((book) => {
-      res.send(camelizeKeys(book));
+      res.send(camelizeKeys(book[0]));
     })
     .catch((err) => {
       next(err);
@@ -34,7 +34,7 @@ router.post('/books', (req, res, next) => {
   knex('books')
     .insert(decamelizeKeys(req.body), '*')
     .then((book) => {
-      res.send(camelizeKeys(book));
+      res.send(camelizeKeys(book[0]));
     })
     .catch((err) => {
       next(err);
@@ -47,7 +47,7 @@ router.patch('/books/:id', (req, res, next) => {
     .where('id', id)
     .update(decamelizeKeys(req.body), '*')
     .then((book) => {
-      res.send(camelizeKeys(book));
+      res.send(camelizeKeys(book[0]));
     })
     .catch((err) => {
       next(err);
@@ -59,9 +59,9 @@ router.delete('/books/:id', (req, res, next) => {
   knex('books')
     .where('id', id)
     .del()
-    .returning('*')
+    .returning(['title', 'author', 'genre', 'description', 'cover_url'])
     .then((book) => {
-      res.send(camelizeKeys(book));
+      res.send(camelizeKeys(book[0]));
     })
     .catch((err) => {
       next(err);
