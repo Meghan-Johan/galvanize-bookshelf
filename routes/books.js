@@ -53,5 +53,19 @@ router.patch('/books/:id', (req, res, next) => {
     });
 });
 
+router.delete('/books/:id', (req, res, next) => {
+  let id = req.params.id * 1;
+  knex('books')
+    .where('id', id)
+    .del()
+    .returning('*')
+    .then((book) => {
+      res.send(book);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
 
 module.exports = router;
