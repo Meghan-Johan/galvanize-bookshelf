@@ -2,15 +2,16 @@
 
 const express = require('express');
 const knex = require('../knex');
+const { camelizeKeys, decamelizeKeys } = require('humps');
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
 router.get('/books', (req, res, next) => {
   knex('books')
-    .orderBy('id')
+    .orderBy('title')
     .then((books) => {
-      res.send(books);
+      res.send(camelizeKeys(books));
     })
     .catch((err) => {
       next(err);
@@ -22,7 +23,7 @@ router.get('/books/:id', (req, res, next) => {
   knex('books')
     .where('id', id)
     .then((book) => {
-      res.send(book);
+      res.send(camelizeKeys(book));
     })
     .catch((err) => {
       next(err);
@@ -31,9 +32,9 @@ router.get('/books/:id', (req, res, next) => {
 
 router.post('/books', (req, res, next) => {
   knex('books')
-    .insert(req.body, '*')
+    .insert(decamelizeKeys(req.body), '*')
     .then((book) => {
-      res.send(book);
+      res.send(camelizeKeys(book));
     })
     .catch((err) => {
       next(err);
@@ -44,9 +45,9 @@ router.patch('/books/:id', (req, res, next) => {
   let id = req.params.id * 1;
   knex('books')
     .where('id', id)
-    .update(req.body, '*')
+    .update(decamelizeKeys(req.body), '*')
     .then((book) => {
-      res.send(book);
+      res.send(camelizeKeys(book));
     })
     .catch((err) => {
       next(err);
@@ -60,7 +61,7 @@ router.delete('/books/:id', (req, res, next) => {
     .del()
     .returning('*')
     .then((book) => {
-      res.send(book);
+      res.send(camelizeKeys(book));
     })
     .catch((err) => {
       next(err);

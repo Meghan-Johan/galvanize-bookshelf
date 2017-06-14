@@ -88,7 +88,5 @@ exports.seed = function(knex) {
       )
     )
     .then(() =>
-      knex('books')
-        .select(knex.raw("setval('books_id_seq', (SELECT MAX(id) FROM books))"))
-    );
+      knex.raw("SELECT setval('books_id_seq', (SELECT MAX(id) FROM books))"))
 };
