@@ -2,7 +2,7 @@
 
 const express = require('express');
 const knex = require('../knex');
-const bcrypt = require('bcrypt-as-promised');
+const bcrypt = require('bcrypt');
 const { camelizeKeys, decamelizeKeys } = require('humps');
 // eslint-disable-next-line new-cap
 const router = express.Router();
