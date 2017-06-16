@@ -11,6 +11,10 @@ const { camelizeKeys, decamelizeKeys } = require('humps');
 
 router.get('/favorites', (req, res, next) => {
   let userId = getUserId(req);
+  if (!userId) {
+    res.header('Content-Type', 'text/plain');
+    return res.status(401).send('Unauthorized')
+  }
   knex('favorites')
   .innerJoin('books', 'books.id', 'favorites.book_id')
   .where('user_id', userId)
@@ -24,6 +28,10 @@ router.get('/favorites', (req, res, next) => {
 
 router.get('/favorites/check', (req, res, next) => {
   let userId = getUserId(req);
+  if (!userId) {
+    res.header('Content-Type', 'text/plain');
+    return res.status(401).send('Unauthorized')
+  }
   knex('favorites')
   .count('*')
   .where('book_id', req.query.bookId)
@@ -39,6 +47,10 @@ router.get('/favorites/check', (req, res, next) => {
 
 router.post('/favorites', (req, res, next) => {
   let userId = getUserId(req);
+  if (!userId) {
+    res.header('Content-Type', 'text/plain');
+    return res.status(401).send('Unauthorized')
+  }
   knex('favorites')
   .insert({user_id: userId, book_id: req.body.bookId}, '*')
   .then((favorites) => {
@@ -51,6 +63,10 @@ router.post('/favorites', (req, res, next) => {
 
 router.delete('/favorites', (req, res, next) => {
   let userId = getUserId(req);
+  if (!userId) {
+    res.header('Content-Type', 'text/plain');
+    return res.status(401).send('Unauthorized')
+  }
   knex('favorites')
   .where({user_id: userId, book_id: req.body.bookId})
   .del()
@@ -64,6 +80,9 @@ router.delete('/favorites', (req, res, next) => {
 });
 
 function getUserId(req) {
+  if (!req.cookies.token) {
+    return;
+  }
   let decodedToken = jwt.decode(req.cookies.token, {complete: true});
   return decodedToken.payload.sub.id;
 }
