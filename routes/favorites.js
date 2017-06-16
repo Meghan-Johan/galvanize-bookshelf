@@ -10,8 +10,10 @@ const router = express.Router();
 const { camelizeKeys, decamelizeKeys } = require('humps');
 
 router.get('/favorites', (req, res, next) => {
+  let userId = getUserId(req);
   knex('favorites')
   .innerJoin('books', 'books.id', 'favorites.book_id')
+  .where('user_id', userId)
   .then((favorites) => {
     res.send(camelizeKeys(favorites));
   })
@@ -21,9 +23,11 @@ router.get('/favorites', (req, res, next) => {
 });
 
 router.get('/favorites/check', (req, res, next) => {
+  let userId = getUserId(req);
   knex('favorites')
   .count('*')
   .where('book_id', req.query.bookId)
+  .where('user_id', userId)
   .then(countObj => {
     let count = countObj[0].count * 1;
     res.send(count > 0);
@@ -34,8 +38,7 @@ router.get('/favorites/check', (req, res, next) => {
 });
 
 router.post('/favorites', (req, res, next) => {
-  let decoded = jwt.decode(req.cookies.token, {complete: true});
-  let userId = decoded.payload.sub.id;
+  let userId = getUserId(req);
   knex('favorites')
   .insert({user_id: userId, book_id: req.body.bookId}, '*')
   .then((favorites) => {
@@ -47,8 +50,7 @@ router.post('/favorites', (req, res, next) => {
 });
 
 router.delete('/favorites', (req, res, next) => {
-  let decoded = jwt.decode(req.cookies.token, {complete: true});
-  let userId = decoded.payload.sub.id;
+  let userId = getUserId(req);
   knex('favorites')
   .where({user_id: userId, book_id: req.body.bookId})
   .del()
@@ -60,5 +62,10 @@ router.delete('/favorites', (req, res, next) => {
     next(err);
   });
 });
+
+function getUserId(req) {
+  let decodedToken = jwt.decode(req.cookies.token, {complete: true});
+  return decodedToken.payload.sub.id;
+}
 
 module.exports = router;
