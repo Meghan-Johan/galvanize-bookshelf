@@ -60,7 +60,9 @@ router.post('/token', (req, res) => {
 });
 
 router.delete('/token', (req, res) => {
-
+  res.clearCookie('token', { path: '/' });
+  res.status(200).send(true);
 });
+
 
 module.exports = router;
