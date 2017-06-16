@@ -40,9 +40,7 @@ router.post('/token', (req, res) => {
             sub: {
               email: user.email,
               id: user.id
-            },
-            exp: Math.floor(Date.now() / 1000) + (60 * 60),
-            loggedIn: true
+            }
           };
           const secret = process.env.JWT_KEY;
           const token = jwt.sign(jwtPayload, secret);
