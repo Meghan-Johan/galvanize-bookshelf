@@ -46,4 +46,19 @@ router.post('/favorites', (req, res, next) => {
   });
 });
 
+router.delete('/favorites', (req, res, next) => {
+  let decoded = jwt.decode(req.cookies.token, {complete: true});
+  let userId = decoded.payload.sub.id;
+  knex('favorites')
+  .where({user_id: userId, book_id: req.body.bookId})
+  .del()
+  .returning(['book_id', 'user_id'])
+  .then((favorites) => {
+    res.send(camelizeKeys(favorites[0]));
+  })
+  .catch((err) => {
+    next(err);
+  });
+});
+
 module.exports = router;
