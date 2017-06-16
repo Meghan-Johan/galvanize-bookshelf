@@ -10,7 +10,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/token', (req, res) => {
-  if (req.cookies.auth) {
+  if (req.cookies.token) {
     res.status(200).send(true);
   } else {
     res.status(200).send(false);
@@ -40,11 +40,18 @@ router.post('/token', (req, res) => {
         exp: Math.floor(Date.now() / 1000) + (60 * 60),
         loggedIn: true
       };
-
+      const opts = {
+        httpOnly: true
+      };
       const secret = process.env.JWT_KEY;
       const token = jwt.sign(jwtPayload, secret);
-      res.cookie('auth', token).send('Good password! Cookie "auth" set with JWT.');
-
+      let response = {
+        id: user.id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name
+      }
+      res.cookie('token', token, opts).send(response);
     })
     .catch((err) => {
       // res.status(500).send("Error in POST /token");
